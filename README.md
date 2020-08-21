@@ -1,4 +1,4 @@
-# Command-Line Interface Parser and Utilities
+# Parser and Utilities for Java Command-Line Applications
 
 This class enhances the features of the <a href="https://commons.apache.org/proper/commons-cli/">Apache Commons CLI library</a>
 for parsing command-line parameters in a Java application by providing common-sense defaults and handlers for the following:
