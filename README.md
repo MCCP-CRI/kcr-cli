@@ -7,7 +7,7 @@ for parsing command-line parameters in a Java application by providing common-se
  * console output of version information, read from Jar manifest attributes
  * listener interface for options as they are parsed
  
- ###Usage:
+ ### Usage:
 1. Create a [`CliParser`](src/main/java/edu/uky/kcr/cli/CliParser.java) at the top of the main() method, with a syntax String and options configured using `.with()` methods:
     ```
     public static void main(String[] args)
