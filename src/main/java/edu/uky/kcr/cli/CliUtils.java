@@ -90,7 +90,7 @@ public class CliUtils
 	public static Map<String, String> readManifestValues()
 			throws IOException
 	{
-		return readManifestValues(CliUtils.class);
+		return readManifestValues(null);
 	}
 
 	/**
@@ -103,6 +103,11 @@ public class CliUtils
 	public static Map<String, String> readManifestValues(Class clazz)
 			throws IOException
 	{
+		if (clazz == null)
+		{
+			clazz = CliUtils.class;
+		}
+
 		Map<String, String> valueMap = new LinkedHashMap<>();
 
 		URL classUrl = clazz.getResource(clazz.getSimpleName() + ".class");
