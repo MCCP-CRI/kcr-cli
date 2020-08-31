@@ -62,6 +62,7 @@ public class CliParser
 	private CommandLine commandLine = null;
 	private CliListener listener = null;
 	private Class classForVersionManifest = null;
+	private boolean enableHelpWhenNoArgumentsOrOptions = false;
 
 	/**
 	 * Constructor that takes a String to shows the syntax of how to call your application, such as:
@@ -239,7 +240,7 @@ public class CliParser
 
 				logger.fine("Logging intialized to level: " + level.getName());
 
-				if ((getCommandLine().getArgList() == null) || (getCommandLine().getArgList().size() == 0))
+				if (getCommandLine().getArgList() == null || getCommandLine().getArgList().size() == 0)
 				{
 					getListener().handleNoArguments(this);
 				}
@@ -249,31 +250,41 @@ public class CliParser
 					getListener().handleNoOptions(this);
 				}
 
-				List<Option> missingOptions = new ArrayList<>();
-
-				for (Option appOption : getOptions().getOptions())
+				if ((getCommandLine().getOptions() == null || getCommandLine()
+						.getOptions().length == 0) && (getCommandLine().getArgList() == null) || (getCommandLine()
+						.getArgList().size() == 0) && isEnableHelpWhenNoArgumentsOrOptions())
 				{
-					if (getCommandLine().hasOption(appOption.getOpt()) == false)
+					printHelp();
+				}
+				else
+				{
+					List<Option> missingOptions = new ArrayList<>();
+
+					for (Option appOption : getOptions().getOptions())
 					{
-						missingOptions.add(appOption);
+						if (getCommandLine().hasOption(appOption.getOpt()) == false)
+						{
+							missingOptions.add(appOption);
+						}
 					}
-				}
 
-				if (missingOptions.size() > 0)
-				{
-					getListener().handleMissingOptions(missingOptions, this);
-				}
+					if (missingOptions.size() > 0)
+					{
+						getListener().handleMissingOptions(missingOptions, this);
+					}
 
-				if ((getCommandLine().getArgList() != null) && (getCommandLine().getArgList().size() > 0))
-				{
-					getListener().handleParsedArgumentList(getCommandLine().getArgList(), this);
-				}
+					if ((getCommandLine().getArgList() != null) && (getCommandLine().getArgList().size() > 0))
+					{
+						getListener().handleParsedArgumentList(getCommandLine().getArgList(), this);
+					}
 
-				for (Iterator<Option> optionIterator = getCommandLine().iterator(); optionIterator.hasNext(); )
-				{
-					Option lineOption = optionIterator.next();
+					for (Iterator<Option> optionIterator = getCommandLine().iterator(); optionIterator.hasNext(); )
+					{
+						Option lineOption = optionIterator.next();
 
-					getListener().handleParsedOption(lineOption.getOpt(), getParsedValues(lineOption.getOpt()), this);
+						getListener().handleParsedOption(lineOption.getOpt(), getParsedValues(lineOption.getOpt()),
+														 this);
+					}
 				}
 			}
 			catch (ParseException exception)
@@ -400,6 +411,18 @@ public class CliParser
 	public CliParser withExtraVersionInfoManifestKeys(String... keys)
 	{
 		getExtraVersionInfoManifestKeys().addAll(Arrays.asList(keys));
+
+		return this;
+	}
+
+	/**
+	 * @param printHelp Boolean that determines whether a Help message will be printed whenever the application is run
+	 *                  without any arguments or options, defaults to false.
+	 * @return
+	 */
+	public CliParser withEnableHelpWhenNoArgumentsOrOptions(boolean printHelp)
+	{
+		setEnableHelpWhenNoArgumentsOrOptions(printHelp);
 
 		return this;
 	}
@@ -677,6 +700,16 @@ public class CliParser
 	protected void setExtraVersionInfoManifestKeys(List<String> extraVersionInfoManifestKeys)
 	{
 		this.extraVersionInfoManifestKeys = extraVersionInfoManifestKeys;
+	}
+
+	public boolean isEnableHelpWhenNoArgumentsOrOptions()
+	{
+		return enableHelpWhenNoArgumentsOrOptions;
+	}
+
+	public void setEnableHelpWhenNoArgumentsOrOptions(boolean enableHelpWhenNoArgumentsOrOptions)
+	{
+		this.enableHelpWhenNoArgumentsOrOptions = enableHelpWhenNoArgumentsOrOptions;
 	}
 
 	/**
