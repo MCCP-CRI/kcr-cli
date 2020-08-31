@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ public class CliParser
 	{{
 		addAll(Arrays.asList(new String[]{"Build-Jdk", "Build-Time"}));
 	}};
+	private Map<String, String> extraVersionInfoMap = new HashMap<>();
 
 	private boolean includeRuntimeVersionInExtraVersionInfo = true;
 	private String commandLineSyntax = null;
@@ -417,6 +419,20 @@ public class CliParser
 	}
 
 	/**
+	 * Add extra version information to the full version string that will be reported to the user when the -v
+	 * option is specified.
+	 * @param key The name of the version information provided when the app version is printed
+	 * @param value The version number for the {@code key} that shows up when the app version is printed
+	 * @return
+	 */
+	public CliParser withExtraVersionInfo(String key, String value)
+	{
+		getExtraVersionInfoMap().put(key, value);
+
+		return this;
+	}
+
+	/**
 	 * @param printHelp Boolean that determines whether a Help message will be printed whenever the application is run
 	 *                  without any arguments or options, defaults to false. Setting this to true will cause
 	 *                  {@link CliParser#parse(String[])} to return false if no arguments or options are specified.
@@ -502,6 +518,16 @@ public class CliParser
 			else if (getExtraVersionInfoManifestKeys().contains(manifestKey))
 			{
 				extraVersionInfoList.add(String.format("%s=%s", manifestKey, manifestValue));
+			}
+		}
+
+		if (getExtraVersionInfoMap().isEmpty() == false)
+		{
+			for (String key : getExtraVersionInfoMap().keySet())
+			{
+				String value = getExtraVersionInfoMap().get(key);
+
+				extraVersionInfoList.add(String.format("%s=%s", key, value));
 			}
 		}
 
@@ -709,7 +735,7 @@ public class CliParser
 		return enableHelpWhenNoArgumentsOrOptions;
 	}
 
-	public void setEnableHelpWhenNoArgumentsOrOptions(boolean enableHelpWhenNoArgumentsOrOptions)
+	protected void setEnableHelpWhenNoArgumentsOrOptions(boolean enableHelpWhenNoArgumentsOrOptions)
 	{
 		this.enableHelpWhenNoArgumentsOrOptions = enableHelpWhenNoArgumentsOrOptions;
 	}
@@ -740,6 +766,11 @@ public class CliParser
 	protected void setListener(CliListener listener)
 	{
 		this.listener = listener;
+	}
+
+	protected Map<String, String> getExtraVersionInfoMap()
+	{
+		return extraVersionInfoMap;
 	}
 }
 
