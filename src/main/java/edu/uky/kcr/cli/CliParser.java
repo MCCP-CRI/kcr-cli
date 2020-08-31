@@ -255,6 +255,7 @@ public class CliParser
 						.getArgList().size() == 0) && isEnableHelpWhenNoArgumentsOrOptions())
 				{
 					printHelp();
+					shouldContinue = false;
 				}
 				else
 				{
