@@ -6,7 +6,7 @@
 
     <groupId>edu.uky.kcr</groupId>
     <artifactId>kcr-cli</artifactId>
-    <version>1.3</version>
+    <version>1.4</version>
 
     <properties>
         <maven.compiler.source>11</maven.compiler.source>

@@ -138,12 +138,19 @@ public class CliUtils
 	 * @throws JsonProcessingException
 	 */
 	public static String toJsonString(Object object)
-			throws JsonProcessingException
+			throws ParseException
 	{
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
 
-		return objectMapper.writer().withoutAttribute("").writeValueAsString(object);
+		try
+		{
+			return objectMapper.writer().withoutAttribute("").writeValueAsString(object);
+		}
+		catch (JsonProcessingException jsonProcessingException)
+		{
+			throw new ParseException(String.format("Unable to parse object to JSON String: %s", jsonProcessingException.getMessage()));
+		}
 	}
 
 	/**
@@ -153,7 +160,7 @@ public class CliUtils
 	 * @throws JsonProcessingException
 	 */
 	public static void printJsonToSystemOut(Object object)
-			throws JsonProcessingException
+			throws ParseException
 	{
 		System.out.println(toJsonString(object));
 	}
