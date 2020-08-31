@@ -1,5 +1,8 @@
 package edu.uky.kcr.cli;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.apache.commons.cli.ParseException;
 
 import java.io.IOException;
@@ -128,5 +131,31 @@ public class CliUtils
 		return valueMap;
 	}
 
+	/**
+	 *
+	 * @param object any object that can be safely turned into a JSON string
+	 * @return A stringified version of {@code object}.
+	 * @throws JsonProcessingException
+	 */
+	public static String toJsonString(Object object)
+			throws JsonProcessingException
+	{
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+		return objectMapper.writer().withoutAttribute("").writeValueAsString(object);
+	}
+
+	/**
+	 * Print out a JSON stringified version of {@code object} to System.out.
+	 *
+	 * @param object
+	 * @throws JsonProcessingException
+	 */
+	public static void printJsonToSystemOut(Object object)
+			throws JsonProcessingException
+	{
+		System.out.println(toJsonString(object));
+	}
 
 }
