@@ -115,6 +115,30 @@ public class CliParser
 
 	/**
 	 * @param opt
+	 * @param separator
+	 * @return List of parsed values from the command-line for the option with the short name, {@code opt}, split by
+	 * the {@code separator} into a String array.
+	 * Returns an empty List if no parsed values were found.
+	 */
+	public List<String[]> getParsedValuesSplit(String opt,
+											   String separator)
+	{
+		List<String[]> parsedValuesSplit = new ArrayList<>();
+
+		String[] parsedValues = getParsedValues(opt);
+		if (parsedValues != null)
+		{
+			for (int i = 0; i < parsedValues.length; i++)
+			{
+				parsedValuesSplit.add(StringUtils.split(parsedValues[i], separator));
+			}
+		}
+
+		return parsedValuesSplit;
+	}
+
+	/**
+	 * @param opt
 	 * @return First parsed value from the command-line for the option with the short name, {@code opt}.
 	 * Returns null if no parsed values were found.
 	 */
@@ -124,7 +148,19 @@ public class CliParser
 	}
 
 	/**
-	 *
+	 * @param opt
+	 * @param separator
+	 * @return First parsed value from the command-line for the option with the short name, {@code opt}, split into a
+	 * String array by the {@code separator}.
+	 * Returns null if no parsed values were found.
+	 */
+	public String[] getParsedValueSplit(String opt,
+										String separator)
+	{
+		return StringUtils.split(getParsedValue(opt), separator);
+	}
+
+	/**
 	 * @param opt
 	 * @return The number of parsed values from the command-line for the option with the short name, {@code opt}.
 	 */
@@ -149,6 +185,7 @@ public class CliParser
 	 * Call this method after configuring the CliParser instance with {@link Option} objects and an optional
 	 * {@link CliListener}. Pay attention to the return value and exit the application as soon as possible if it
 	 * returns false, which means that parsing failed and an error message was output to the console already.
+	 *
 	 * @param args
 	 * @return true if parsing was successful and the application should continue, false if the application should exit
 	 */
@@ -251,7 +288,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param option A new command-line {@link Option} to parse
 	 * @return
 	 */
@@ -263,7 +299,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param options Array of command-line options to parse
 	 * @return
 	 */
@@ -278,7 +313,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param enabled Whether to enable Help output on the console with the short name of 'h'. Defaults to true.
 	 * @return
 	 */
@@ -290,7 +324,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param enabled Whether to enable Version output on the console with the short name of 'v'. Defaults to true.
 	 * @return
 	 */
@@ -302,7 +335,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param enabled Whether to enable control of the level of console Logging as a command-line option with the short
 	 *                name of 'l'. Defaults to true.
 	 * @return
@@ -315,7 +347,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param listener Handler for parsing events as command-line arguments are parsed.
 	 * @return
 	 */
@@ -327,7 +358,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param key The attribute key to look for in the Jar manifest that will hold the version of this application,
 	 *            defaults to "App-Version";
 	 * @return
@@ -340,7 +370,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param enabled Whether to enable output of the Java Runtime version with the application version info,
 	 *                defaults to true.
 	 * @return
@@ -353,7 +382,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param level The default JUL Logging level for console output, defaults to INFO.
 	 * @return
 	 */
@@ -365,7 +393,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @param keys Array of manifest attribute keys to read and output with the application version info,
 	 *             defaults to: "Build-Jdk", "Build-Time"
 	 * @return
@@ -379,6 +406,7 @@ public class CliParser
 
 	/**
 	 * Convenience method for adding a command-line option
+	 *
 	 * @param opt
 	 * @param longOpt
 	 * @param hasArg
@@ -396,7 +424,8 @@ public class CliParser
 	}
 
 	/**
-	 * 	 Convenience method for adding a required command-line option
+	 * Convenience method for adding a required command-line option
+	 *
 	 * @param opt
 	 * @param longOpt
 	 * @param hasArg
@@ -419,6 +448,7 @@ public class CliParser
 	/**
 	 * Default method for handling any parsing exception that happens during the {@link #parse(String[])} operation.
 	 * By default, will print out full application help along with a one-line message about why parsing failed.
+	 *
 	 * @param parseException
 	 */
 	public void defaultHandleParseException(ParseException parseException)
@@ -650,7 +680,6 @@ public class CliParser
 	}
 
 	/**
-	 *
 	 * @return The parsed {@link CommandLine} object with access to a lot of details about the parsed options
 	 */
 	public CommandLine getCommandLine()
