@@ -418,7 +418,8 @@ public class CliParser
 
 	/**
 	 * @param printHelp Boolean that determines whether a Help message will be printed whenever the application is run
-	 *                  without any arguments or options, defaults to false.
+	 *                  without any arguments or options, defaults to false. Setting this to true will cause
+	 *                  {@link CliParser#parse(String[])} to return false if no arguments or options are specified.
 	 * @return
 	 */
 	public CliParser withEnableHelpWhenNoArgumentsOrOptions(boolean printHelp)
