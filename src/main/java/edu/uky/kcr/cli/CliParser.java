@@ -251,7 +251,7 @@ public class CliParser
 				}
 
 				if ((getCommandLine().getOptions() == null || getCommandLine()
-						.getOptions().length == 0) && (getCommandLine().getArgList() == null) || (getCommandLine()
+						.getOptions().length == 0) && (getCommandLine().getArgList() == null || getCommandLine()
 						.getArgList().size() == 0) && isEnableHelpWhenNoArgumentsOrOptions())
 				{
 					printHelp();
