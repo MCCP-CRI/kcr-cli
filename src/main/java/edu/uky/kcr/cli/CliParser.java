@@ -44,11 +44,19 @@ public class CliParser
 	private static final Logger logger = Logger.getLogger(CliParser.class.getName());
 
 	public static final String DEFAULT_VERSION_MANIFEST_KEY = "App-Version";
+	public static final String SHORT_OPTION_HELP = "h";
+	public static final String LONG_OPTION_HELP = "help";
+	public static final String SHORT_OPTION_LOGGING = "l";
+	public static final String SHORT_OPTION_VERSION = "v";
+	public static final String LONG_OPTION_VERSION = "version";
+
 	private String versionManifestKey = DEFAULT_VERSION_MANIFEST_KEY;
+
 	private List<String> extraVersionInfoManifestKeys = new ArrayList<>()
 	{{
 		addAll(Arrays.asList(new String[]{"Build-Jdk", "Build-Time"}));
 	}};
+
 	private Map<String, String> extraVersionInfoMap = new HashMap<>();
 
 	private boolean includeRuntimeVersionInExtraVersionInfo = true;
@@ -69,7 +77,6 @@ public class CliParser
 	/**
 	 * Constructor that takes a String to shows the syntax of how to call your application, such as:
 	 * {@code new CliParser("java -jar myapp.jar <argument1> [OPTIONS]")}
-	 *
 	 * @param commandLineSyntax
 	 */
 	public CliParser(String commandLineSyntax)
@@ -97,7 +104,6 @@ public class CliParser
 
 	/**
 	 * Accessor for {@link Option} objects on this CliParser instance, added using the ".with...()" methods
-	 *
 	 * @param opt The short name of an {@link Option}
 	 * @return the {@link Option} object
 	 */
@@ -123,8 +129,9 @@ public class CliParser
 	 * the {@code separator} into a String array.
 	 * Returns an empty List if no parsed values were found.
 	 */
-	public List<String[]> getParsedValuesSplit(String opt,
-											   String separator)
+	public List<String[]> getParsedValuesSplit(
+			String opt,
+			String separator)
 	{
 		List<String[]> parsedValuesSplit = new ArrayList<>();
 
@@ -157,8 +164,9 @@ public class CliParser
 	 * String array by the {@code separator}.
 	 * Returns null if no parsed values were found.
 	 */
-	public String[] getParsedValueSplit(String opt,
-										String separator)
+	public String[] getParsedValueSplit(
+			String opt,
+			String separator)
 	{
 		return StringUtils.split(getParsedValue(opt), separator);
 	}
@@ -188,7 +196,6 @@ public class CliParser
 	 * Call this method after configuring the CliParser instance with {@link Option} objects and an optional
 	 * {@link CliListener}. Pay attention to the return value and exit the application as soon as possible if it
 	 * returns false, which means that parsing failed and an error message was output to the console already.
-	 *
 	 * @param args
 	 * @return true if parsing was successful and the application should continue, false if the application should exit
 	 */
@@ -196,29 +203,35 @@ public class CliParser
 	{
 		boolean shouldContinue = true;
 
-		if (isEnableHelpOption())
-		{
-			getOptions().addOption(getHelpOption());
-
-			if (ArrayUtils.contains(args, String.format("-%s", getHelpOption().getOpt())) || ArrayUtils.contains(args,
-																												 String.format(
-																														 "-%s",
-																														 getHelpOption()
-																																 .getLongOpt())))
-			{
-				printHelp();
-				shouldContinue = false;
-			}
-		}
-
-		if (isEnableVersionOption() && shouldContinue)
+		if (isEnableVersionOption())
 		{
 			getOptions().addOption(getVersionOption());
 
 			if (ArrayUtils.contains(args, String.format("-%s", getVersionOption().getOpt())) || ArrayUtils.contains(
-					args, String.format("-%s", getVersionOption().getLongOpt())))
+					args, String.format("--%s", getVersionOption().getLongOpt())))
 			{
 				printVersion();
+				shouldContinue = false;
+			}
+		}
+
+		if (isEnableLoggingOption())
+		{
+			getOptions().addOption(getLoggingOption());
+		}
+
+		if (shouldContinue && isEnableHelpOption())
+		{
+			getOptions().addOption(getHelpOption());
+
+			if (ArrayUtils.contains(args, String.format("-%s", getHelpOption().getOpt())) || ArrayUtils.contains(
+					args,
+					String.format(
+							"--%s",
+							getHelpOption()
+									.getLongOpt())))
+			{
+				printHelp();
 				shouldContinue = false;
 			}
 		}
@@ -227,11 +240,6 @@ public class CliParser
 		{
 			try
 			{
-				if (isEnableLoggingOption())
-				{
-					getOptions().addOption(getLoggingOption());
-				}
-
 				CommandLineParser parser = new DefaultParser();
 
 				setCommandLine(parser.parse(getOptions(), args));
@@ -421,7 +429,7 @@ public class CliParser
 	/**
 	 * Add extra version information to the full version string that will be reported to the user when the -v
 	 * option is specified.
-	 * @param key The name of the version information provided when the app version is printed
+	 * @param key   The name of the version information provided when the app version is printed
 	 * @param value The version number for the {@code key} that shows up when the app version is printed
 	 * @return
 	 */
@@ -447,17 +455,17 @@ public class CliParser
 
 	/**
 	 * Convenience method for adding a command-line option
-	 *
 	 * @param opt
 	 * @param longOpt
 	 * @param hasArg
 	 * @param description
 	 * @return
 	 */
-	public CliParser withOption(String opt,
-								String longOpt,
-								boolean hasArg,
-								String description)
+	public CliParser withOption(
+			String opt,
+			String longOpt,
+			boolean hasArg,
+			String description)
 	{
 		getOptions().addOption(new Option(opt, longOpt, hasArg, description));
 
@@ -466,17 +474,17 @@ public class CliParser
 
 	/**
 	 * Convenience method for adding a required command-line option
-	 *
 	 * @param opt
 	 * @param longOpt
 	 * @param hasArg
 	 * @param description
 	 * @return
 	 */
-	public CliParser withRequiredOption(String opt,
-										String longOpt,
-										boolean hasArg,
-										String description)
+	public CliParser withRequiredOption(
+			String opt,
+			String longOpt,
+			boolean hasArg,
+			String description)
 	{
 		Option option = new Option(opt, longOpt, hasArg, description);
 		option.setRequired(true);
@@ -489,7 +497,6 @@ public class CliParser
 	/**
 	 * Default method for handling any parsing exception that happens during the {@link #parse(String[])} operation.
 	 * By default, will print out full application help along with a one-line message about why parsing failed.
-	 *
 	 * @param parseException
 	 */
 	public void defaultHandleParseException(ParseException parseException)
@@ -536,7 +543,7 @@ public class CliParser
 			extraVersionInfoList.add(String.format("Runtime=%s", Runtime.version().toString()));
 		}
 
-		String versionString = String.format("version %s", version);
+		String versionString = String.format("%s %s", LONG_OPTION_VERSION, version);
 
 		if (extraVersionInfoList.size() > 0)
 		{
@@ -596,7 +603,7 @@ public class CliParser
 	{
 		if (this.versionOption == null)
 		{
-			this.versionOption = new Option("v", "version", false, "Show version.");
+			this.versionOption = new Option(SHORT_OPTION_VERSION, LONG_OPTION_VERSION, false, "Show version.");
 		}
 		return versionOption;
 	}
@@ -610,7 +617,7 @@ public class CliParser
 	{
 		if (this.helpOption == null)
 		{
-			this.helpOption = new Option("h", "help", false, "Show help.");
+			this.helpOption = new Option(SHORT_OPTION_HELP, LONG_OPTION_HELP, false, "Show help.");
 		}
 
 		return helpOption;
@@ -625,7 +632,7 @@ public class CliParser
 	{
 		if (this.loggingOption == null)
 		{
-			this.loggingOption = new Option("l", "loglevel", true,
+			this.loggingOption = new Option(SHORT_OPTION_LOGGING, "loglevel", true,
 											String.format("Log level (default is %s): %s", getDefaultLogLevel(),
 														  StringUtils.joinWith(", ", Level.ALL.getName(),
 																			   Level.OFF.getName(),
